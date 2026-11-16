@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Member Dashboard - KeyFit{% endblock %}
+{% block content %}
+<main class="wide">
+  <h2>Welcome, {{ user.display_name|default:user.username }}</h2>
+  <div class="card"><h3>My saved boards</h3><p>Coming soon: your keyboard profiles.</p></div>
+  <div class="card"><h3>Recent checks</h3><p>Coming soon: your 10 most recent compatibility checks.</p></div>
+  <div class="card"><h3>Database browser</h3><p>Coming soon: browse keycap sets and switches.</p></div>
+</main>
+{% endblock %}

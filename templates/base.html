@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}KeyFit{% endblock %}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; background: #f4f5f7; color: #222; }
+    nav { background: #1f2a44; padding: 12px 24px; display: flex; gap: 16px; align-items: center; }
+    nav a, nav button { color: #fff; text-decoration: none; background: none; border: 0; font: inherit; cursor: pointer; }
+    nav .brand { font-weight: 700; font-size: 1.2rem; margin-right: auto; }
+    main { max-width: 520px; margin: 32px auto; background: #fff; padding: 24px 28px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+    main.wide { max-width: 800px; }
+    .msg { padding: 10px 14px; border-radius: 6px; margin: 12px auto; max-width: 520px; }
+    .msg.success { background: #d9f2e0; color: #17572b; }
+    .msg.error { background: #fbdcdc; color: #8a1c1c; }
+    form p { display: flex; flex-direction: column; gap: 4px; }
+    input { padding: 8px; border: 1px solid #bbb; border-radius: 4px; }
+    .errorlist { color: #b3261e; margin: 0; padding-left: 18px; font-size: .9rem; }
+    .helptext { font-size: .8rem; color: #666; }
+    .btn { background: #1f2a44; color: #fff; border: 0; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-size: 1rem; }
+    .card { border: 1px solid #ddd; border-radius: 6px; padding: 14px; margin-top: 14px; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="brand" href="{% url 'dashboard' %}">KeyFit</a>
+    {% if user.is_authenticated %}
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      <a href="{% url 'profile' %}">Profile</a>
+      <span style="color:#fff">{{ user.display_name|default:user.username }} ({{ user.role }})</span>
+      <form method="post" action="{% url 'logout' %}" style="margin:0">
+        {% csrf_token %}<button type="submit">Log out</button>
+      </form>
+    {% else %}
+      <a href="{% url 'login' %}">Log in</a>
+      <a href="{% url 'register' %}">Register</a>
+    {% endif %}
+  </nav>
+
+  {% for message in messages %}
+    <div class="msg {{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+
+  {% block content %}{% endblock %}
+</body>
+</html>

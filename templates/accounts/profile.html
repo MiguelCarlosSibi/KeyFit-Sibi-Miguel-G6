@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Profile - KeyFit{% endblock %}
+{% block content %}
+<main>
+  <h2>My profile</h2>
+  <p><strong>Username:</strong> {{ user.username }}<br>
+     <strong>Role:</strong> {{ user.role }}<br>
+     <strong>Joined:</strong> {{ user.date_joined|date:"M d, Y" }}</p>
+  <h3>Edit details</h3>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn" type="submit">Save changes</button>
+  </form>
+</main>
+{% endblock %}
