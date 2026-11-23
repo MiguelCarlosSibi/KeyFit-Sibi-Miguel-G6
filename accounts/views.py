@@ -2,8 +2,11 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
+from compat.models import KeyboardProfile
+
 from .decorators import role_required
 from .forms import ProfileForm, RegisterForm
+from .models import User
 
 
 def register(request):
@@ -29,13 +32,24 @@ def dashboard(request):
 @login_required
 @role_required("member")
 def member_dashboard(request):
-    return render(request, "accounts/member_dashboard.html")
+    boards = KeyboardProfile.objects.filter(user=request.user).select_related(
+        "layout", "stem_type")
+    return render(request, "accounts/member_dashboard.html", {
+        "boards": boards,
+        "recent_checks": None,  # filled in by the keycap checker increment
+    })
 
 
 @login_required
 @role_required("admin")
 def admin_dashboard(request):
-    return render(request, "accounts/admin_dashboard.html")
+    return render(request, "accounts/admin_dashboard.html", {
+        "user_count": User.objects.count(),
+        "board_count": KeyboardProfile.objects.count(),
+        "all_boards": KeyboardProfile.objects.select_related("user", "layout")[:10],
+        "check_count": None,
+        "recent_checks": None,
+    })
 
 
 @login_required
