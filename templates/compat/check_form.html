@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}New check - KeyFit{% endblock %}
+{% block content %}
+<main>
+  <h2>Check a keycap set</h2>
+  {% if not has_profiles %}
+    <p>You need a saved board first, so KeyFit knows what to check against.</p>
+    <a class="btn" href="{% url 'profile_create' %}">Add a board</a>
+  {% elif not has_sets %}
+    <p class="muted">There are no approved keycap sets in the database yet. Ask an administrator to add some.</p>
+  {% else %}
+    <p class="muted">Pick one of your boards and a keycap set. KeyFit compares stem type, height class and key coverage.</p>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="btn" type="submit">Run check</button>
+      <a class="btn secondary" href="{% url 'check_list' %}">Cancel</a>
+    </form>
+  {% endif %}
+</main>
+{% endblock %}

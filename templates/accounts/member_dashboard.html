@@ -3,8 +3,68 @@
 {% block content %}
 <main class="wide">
   <h2>Welcome, {{ user.display_name|default:user.username }}</h2>
-  <div class="card"><h3>My saved boards</h3><p>Coming soon: your keyboard profiles.</p></div>
-  <div class="card"><h3>Recent checks</h3><p>Coming soon: your 10 most recent compatibility checks.</p></div>
-  <div class="card"><h3>Database browser</h3><p>Coming soon: browse keycap sets and switches.</p></div>
+  {% url 'check_create' as check_url %}
+
+  <div class="card">
+    <div class="row">
+      <h3>My saved boards</h3>
+      <a class="btn small" href="{% url 'profile_create' %}">+ Add board</a>
+    </div>
+    {% if boards %}
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Name</th><th>Layout</th><th>Stem</th><th></th></tr></thead>
+          <tbody>
+          {% for b in boards %}
+            <tr>
+              <td>{{ b.profile_name }}</td>
+              <td>{{ b.layout.name }}</td>
+              <td>{{ b.stem_type.name }}</td>
+              <td class="actions">
+                {% if check_url %}<a href="{{ check_url }}?profile={{ b.pk }}">Check</a>{% endif %}
+                <a href="{% url 'profile_edit' b.pk %}">Edit</a>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p><a href="{% url 'profile_list' %}">Manage all boards</a></p>
+    {% else %}
+      <p class="muted">No boards yet. Add one to start checking keycap sets.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <h3>Recent checks</h3>
+      {% if check_url %}<a class="btn small" href="{{ check_url }}">+ New check</a>{% endif %}
+    </div>
+    {% if recent_checks is None %}
+      <p class="muted">Coming soon: your 10 most recent compatibility checks.</p>
+    {% elif recent_checks %}
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Date</th><th>Board</th><th>Keycap set</th><th>Result</th><th></th></tr></thead>
+          <tbody>
+          {% for c in recent_checks %}
+            <tr>
+              <td>{{ c.checked_at|date:"M d, Y H:i" }}</td>
+              <td>{{ c.profile.profile_name }}</td>
+              <td>{{ c.keycap_set.name }}</td>
+              <td><span class="badge {{ c.result }}">{{ c.get_result_display }}</span></td>
+              <td class="actions"><a href="{% url 'check_detail' c.pk %}">View</a></td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p><a href="{% url 'check_list' %}">See full history</a></p>
+    {% else %}
+      <p class="muted">No checks yet. Run your first check to see the result here.</p>
+    {% endif %}
+  </div>
+
+  <div class="card"><h3>Database browser</h3><p class="muted">Coming soon: browse keycap sets and switches.</p></div>
 </main>
 {% endblock %}
