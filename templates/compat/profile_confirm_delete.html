@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Delete board - KeyFit{% endblock %}
+{% block content %}
+<main>
+  <h2>Delete "{{ profile.profile_name }}"?</h2>
+  <p>This removes the board and any compatibility checks you ran for it. This cannot be undone.</p>
+  <form method="post">
+    {% csrf_token %}
+    <button class="btn danger" type="submit">Yes, delete</button>
+    <a class="btn secondary" href="{% url 'profile_list' %}">Cancel</a>
+  </form>
+</main>
+{% endblock %}
