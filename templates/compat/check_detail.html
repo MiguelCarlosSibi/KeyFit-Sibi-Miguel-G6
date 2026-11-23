@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Check result - KeyFit{% endblock %}
+{% block content %}
+<main class="wide">
+  <div class="row">
+    <h2>Check result</h2>
+    <span class="badge {{ check.result }}">{{ check.get_result_display }}</span>
+  </div>
+  <p class="muted">Run on {{ check.checked_at|date:"M d, Y H:i" }}</p>
+
+  <div class="card">
+    <h3>Board</h3>
+    <p><strong>{{ check.profile.profile_name }}</strong><br>
+       {{ check.profile.layout.name }} &middot; {{ check.profile.stem_type.name }} stem &middot; {{ check.profile.get_form_factor_display }}</p>
+    <h3>Keycap set</h3>
+    <p><strong>{{ check.keycap_set }}</strong><br>
+       {{ check.keycap_set.keycap_profile.name }} profile ({{ check.keycap_set.keycap_profile.get_height_class_display }}) &middot; {{ check.keycap_set.stem_type.name }} stem</p>
+  </div>
+
+  <div class="card">
+    <h3>Why this result</h3>
+    {% if findings %}
+      <ul>
+        {% for f in findings %}<li><strong>{{ f.get_reason_code_display }}:</strong> {{ f.detail }}</li>{% endfor %}
+      </ul>
+    {% else %}
+      <p>Stem type, height class and every required key all match. This set fits your board.</p>
+    {% endif %}
+  </div>
+
+  {% if check.result == 'partial' %}
+  <div class="card">
+    <h3>Missing keys</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Key</th><th>Size</th><th>Required</th><th>In set</th><th>Short by</th></tr></thead>
+        <tbody>
+        {% for m in missing_keys %}
+          <tr>
+            <td>{{ m.key_def.display_name }}</td>
+            <td>{{ m.key_def.key_size_u }}u</td>
+            <td>{{ m.required_qty }}</td>
+            <td>{{ m.available_qty }}</td>
+            <td>{{ m.short_by }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="muted">You would need to buy these keys separately (for example in an extension kit).</p>
+  </div>
+  {% endif %}
+
+  <p>
+    <a class="btn" href="{% url 'check_create' %}?profile={{ check.profile_id }}">Run another check</a>
+    <a class="btn secondary" href="{% url 'check_list' %}">Back to history</a>
+  </p>
+</main>
+{% endblock %}

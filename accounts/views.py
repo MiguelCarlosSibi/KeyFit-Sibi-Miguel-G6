@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
-from compat.models import KeyboardProfile
+from compat.models import CompatibilityCheck, KeyboardProfile
 
 from .decorators import role_required
 from .forms import ProfileForm, RegisterForm
@@ -34,9 +34,12 @@ def dashboard(request):
 def member_dashboard(request):
     boards = KeyboardProfile.objects.filter(user=request.user).select_related(
         "layout", "stem_type")
+    # BR-14: the dashboard shows the 10 most recent checks.
+    recent_checks = CompatibilityCheck.objects.filter(
+        profile__user=request.user).select_related("profile", "keycap_set")[:10]
     return render(request, "accounts/member_dashboard.html", {
         "boards": boards,
-        "recent_checks": None,  # filled in by the keycap checker increment
+        "recent_checks": list(recent_checks),
     })
 
 
@@ -47,8 +50,9 @@ def admin_dashboard(request):
         "user_count": User.objects.count(),
         "board_count": KeyboardProfile.objects.count(),
         "all_boards": KeyboardProfile.objects.select_related("user", "layout")[:10],
-        "check_count": None,
-        "recent_checks": None,
+        "check_count": CompatibilityCheck.objects.count(),
+        "recent_checks": list(CompatibilityCheck.objects.select_related(
+            "profile__user", "keycap_set")[:10]),
     })
 
 
