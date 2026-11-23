@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Delete check - KeyFit{% endblock %}
+{% block content %}
+<main>
+  <h2>Delete this check?</h2>
+  <p>{{ check.profile.profile_name }} vs {{ check.keycap_set }} ({{ check.get_result_display }}). This cannot be undone.</p>
+  <form method="post">
+    {% csrf_token %}
+    <button class="btn danger" type="submit">Yes, delete</button>
+    <a class="btn secondary" href="{% url 'check_list' %}">Cancel</a>
+  </form>
+</main>
+{% endblock %}
