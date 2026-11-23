@@ -3,7 +3,65 @@
 {% block content %}
 <main class="wide">
   <h2>Administrator dashboard</h2>
-  <div class="card"><h3>Pending submissions</h3><p>Coming soon: review queue for community submissions.</p></div>
-  <div class="card"><h3>Catalog management</h3><p>Coming soon: approve or reject keycap sets and switches.</p></div>
+  <div class="stats">
+    <div class="stat"><strong>{{ user_count }}</strong>Users</div>
+    <div class="stat"><strong>{{ board_count }}</strong>Saved boards</div>
+    {% if check_count is not None %}<div class="stat"><strong>{{ check_count }}</strong>Compatibility checks</div>{% endif %}
+  </div>
+
+  <div class="card">
+    <h3>Latest saved boards (all users)</h3>
+    {% if all_boards %}
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Owner</th><th>Board</th><th>Layout</th><th>Updated</th></tr></thead>
+          <tbody>
+          {% for b in all_boards %}
+            <tr>
+              <td>{{ b.user.username }}</td>
+              <td>{{ b.profile_name }}</td>
+              <td>{{ b.layout.name }}</td>
+              <td>{{ b.updated_at|date:"M d, Y H:i" }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="muted">No boards have been saved yet.</p>
+    {% endif %}
+    <p class="muted">Administrators have read-only access to members' boards.</p>
+  </div>
+
+  {% if recent_checks is not None %}
+  <div class="card">
+    <h3>Latest compatibility checks (all users)</h3>
+    {% if recent_checks %}
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Date</th><th>User</th><th>Board</th><th>Keycap set</th><th>Result</th></tr></thead>
+          <tbody>
+          {% for c in recent_checks %}
+            <tr>
+              <td>{{ c.checked_at|date:"M d, Y H:i" }}</td>
+              <td>{{ c.profile.user.username }}</td>
+              <td>{{ c.profile.profile_name }}</td>
+              <td>{{ c.keycap_set.name }}</td>
+              <td><span class="badge {{ c.result }}">{{ c.get_result_display }}</span></td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="muted">No checks have been run yet.</p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <div class="card">
+    <h3>Catalog management</h3>
+    <p>Add or edit keycap sets, layouts and key definitions in the <a href="/admin/">Django admin</a>.</p>
+  </div>
 </main>
 {% endblock %}

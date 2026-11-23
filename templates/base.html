@@ -6,20 +6,40 @@
   <title>{% block title %}KeyFit{% endblock %}</title>
   <style>
     body { font-family: system-ui, sans-serif; margin: 0; background: #f4f5f7; color: #222; }
-    nav { background: #1f2a44; padding: 12px 24px; display: flex; gap: 16px; align-items: center; }
+    nav { background: #1f2a44; padding: 12px 24px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
     nav a, nav button { color: #fff; text-decoration: none; background: none; border: 0; font: inherit; cursor: pointer; }
+    nav a:hover, nav button:hover { text-decoration: underline; }
     nav .brand { font-weight: 700; font-size: 1.2rem; margin-right: auto; }
     main { max-width: 520px; margin: 32px auto; background: #fff; padding: 24px 28px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
-    main.wide { max-width: 800px; }
-    .msg { padding: 10px 14px; border-radius: 6px; margin: 12px auto; max-width: 520px; }
+    main.wide { max-width: 900px; }
+    .msg { padding: 10px 14px; border-radius: 6px; margin: 12px auto; max-width: 900px; }
     .msg.success { background: #d9f2e0; color: #17572b; }
     .msg.error { background: #fbdcdc; color: #8a1c1c; }
     form p { display: flex; flex-direction: column; gap: 4px; }
-    input { padding: 8px; border: 1px solid #bbb; border-radius: 4px; }
+    input, select { padding: 8px; border: 1px solid #bbb; border-radius: 4px; font: inherit; }
     .errorlist { color: #b3261e; margin: 0; padding-left: 18px; font-size: .9rem; }
     .helptext { font-size: .8rem; color: #666; }
-    .btn { background: #1f2a44; color: #fff; border: 0; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-size: 1rem; }
-    .card { border: 1px solid #ddd; border-radius: 6px; padding: 14px; margin-top: 14px; }
+    .btn { display: inline-block; background: #1f2a44; color: #fff; border: 0; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-size: 1rem; text-decoration: none; }
+    .btn.small { padding: 6px 12px; font-size: .9rem; }
+    .btn.secondary { background: #e3e6ec; color: #1f2a44; }
+    .btn.danger { background: #b3261e; }
+    .card { border: 1px solid #ddd; border-radius: 6px; padding: 14px 16px; margin-top: 14px; }
+    .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .muted { color: #666; font-size: .9rem; }
+    .tablewrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #e5e7eb; font-size: .95rem; }
+    th { background: #f4f5f7; }
+    td.actions { white-space: nowrap; }
+    td.actions a, td.actions button { margin-right: 10px; color: #1f2a44; background: none; border: 0; padding: 0; font: inherit; text-decoration: underline; cursor: pointer; }
+    td.actions form { display: inline; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: .85rem; font-weight: 600; }
+    .badge.compatible { background: #d9f2e0; color: #17572b; }
+    .badge.partial { background: #fdf0c9; color: #7a5800; }
+    .badge.incompatible { background: #fbdcdc; color: #8a1c1c; }
+    .stats { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+    .stat { flex: 1; min-width: 140px; border: 1px solid #ddd; border-radius: 6px; padding: 12px; text-align: center; }
+    .stat strong { display: block; font-size: 1.6rem; }
   </style>
 </head>
 <body>
@@ -27,6 +47,16 @@
     <a class="brand" href="{% url 'dashboard' %}">KeyFit</a>
     {% if user.is_authenticated %}
       <a href="{% url 'dashboard' %}">Dashboard</a>
+      {% if user.role == 'member' %}
+        <a href="{% url 'profile_list' %}">My Boards</a>
+        {% url 'check_create' as check_url %}
+        {% if check_url %}
+          <a href="{{ check_url }}">New Check</a>
+          <a href="{% url 'check_list' %}">History</a>
+        {% endif %}
+      {% else %}
+        <a href="/admin/">Manage Catalog</a>
+      {% endif %}
       <a href="{% url 'profile' %}">Profile</a>
       <span style="color:#fff">{{ user.display_name|default:user.username }} ({{ user.role }})</span>
       <form method="post" action="{% url 'logout' %}" style="margin:0">

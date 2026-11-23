@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}My Boards - KeyFit{% endblock %}
+{% block content %}
+<main class="wide">
+  <div class="row">
+    <h2>My keyboard boards</h2>
+    <a class="btn" href="{% url 'profile_create' %}">+ Add board</a>
+  </div>
+  <p class="muted">{{ profiles|length }} of {{ max_profiles }} boards saved.</p>
+  {% url 'check_create' as check_url %}
+  {% if profiles %}
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr><th>Name</th><th>Layout</th><th>Stem</th><th>Socket</th><th>Form factor</th><th>Mounting</th><th></th></tr>
+      </thead>
+      <tbody>
+      {% for p in profiles %}
+        <tr>
+          <td>{{ p.profile_name }}</td>
+          <td>{{ p.layout.name }}</td>
+          <td>{{ p.stem_type.name }}</td>
+          <td>{{ p.get_socket_type_display }}</td>
+          <td>{{ p.get_form_factor_display }}</td>
+          <td>{{ p.get_mounting_style_display }}</td>
+          <td class="actions">
+            {% if check_url %}<a href="{{ check_url }}?profile={{ p.pk }}">Check</a>{% endif %}
+            <a href="{% url 'profile_edit' p.pk %}">Edit</a>
+            <a href="{% url 'profile_delete' p.pk %}">Delete</a>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="card">
+      <p>You have no saved boards yet. A board profile describes your keyboard once, so
+      KeyFit can check keycap sets against it before you buy.</p>
+      <a class="btn small" href="{% url 'profile_create' %}">Add your first board</a>
+    </div>
+  {% endif %}
+</main>
+{% endblock %}
